@@ -10,6 +10,12 @@ import javax.persistence.Table
 @Entity
 @Table
 class Props {
+    constructor()
+
+    constructor(key: String, value: String) {
+        this.key = key
+        this.value = value
+    }
 
     // key
     @Id
