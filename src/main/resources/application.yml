@@ -1,7 +1,7 @@
 datadir: ./data
 
-spring.data.requery:
-  modelName: org.springframework.boot.autoconfigure.data.requery.domain.Models.DEFAULT
-  batchUpdateSize: 50
-  statementCacheSize: 512
-  tableCreationMode: CREATE_NOT_EXISTS
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
