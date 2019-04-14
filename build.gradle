@@ -15,13 +15,29 @@ repositories {
 }
 
 dependencies {
+
+	// basic
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+	// saro
 	implementation 'me.saro:commons:3.0.2'
+
+	// db: requery
 	runtimeOnly 'com.h2database:h2'
+	implementation 'com.zaxxer:HikariCP'
+	implementation 'io.requery:requery-kotlin:1.5.1'
+	annotationProcessor 'io.requery:requery-processor:1.5.1'
+
+	// logger
+	implementation 'org.slf4j:slf4j-api'
+	implementation 'ch.qos.logback:logback-classic'
+	implementation 'io.lettuce:lettuce-core'
+
+	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
