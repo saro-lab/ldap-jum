@@ -1,0 +1,23 @@
+<th:block th:include="/part/html-head"/>
+
+<div id="app">
+
+    <table>
+        <tr :key="node.key" v-for="node in props">
+            <td>{{node.key}}</td>
+            <td>{{node.value}}</td>
+        </tr>
+    </table>
+
+</div>
+
+<script type="application/javascript" th:inline="javascript">
+var app = new Vue({
+    el: '#app',
+    data: {
+        props: [[${props}]]
+    }
+});
+</script>
+
+<th:block th:include="/part/html-tail"/>
