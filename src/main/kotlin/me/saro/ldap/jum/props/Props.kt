@@ -8,7 +8,7 @@ import javax.persistence.Table
 
 
 @Entity
-@Table
+@Table(name = "ldap_prop")
 class Props {
     constructor()
 
