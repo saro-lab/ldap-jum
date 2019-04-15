@@ -1,0 +1,15 @@
+html, body { margin:0; padding:0 }
+
+.doc-mold { max-width:1200px; margin:8px auto; }
+
+#nav { height:64px; line-height:64px; border-bottom: 1px solid #dadada; padding:0 8px; }
+#nav .mark { float:left; font-size:20px; }
+#nav .mark b { color:#3357ab; letter-spacing:2px; margin-right:8px; }
+#nav .mark b  { font-size:32px; }
+#nav .mark span { font-size:28px; color: #64718e; }
+#nav .menu { text-align:right;line-height:68px; }
+#nav .menu a { text-decoration:none; font-size:18px; margin-left:12px; line-height:18px; color:#555 }
+#nav .menu a:hover { color:#2315882; opacity: .8; }
+#nav .menu a img { width:20px; height:20px; vertical-align:middle }
+
+#doc { padding:8px; }
