@@ -7,7 +7,7 @@
     <table>
         <tr :key="node.key" v-for="node in props">
             <td>{{node.key}}</td>
-            <td>{{node.value.replace('admin', "****")}}</td>
+            <td>{{node.value}}</td>
         </tr>
     </table>
 
@@ -17,7 +17,7 @@
 var app = new Vue({
     el: '#app',
     data: {
-        props: [[${props}]]
+        users: [[${users}]]
     }
 });
 </script>
