@@ -2,6 +2,7 @@ package me.saro.ldap.jum.ldap
 
 import me.saro.commons.Converter
 import me.saro.commons.Valids
+import me.saro.ldap.jum.ldap.group.Group
 import me.saro.ldap.jum.props.PropsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -60,11 +61,16 @@ class LdapService {
         }
     }
 
-    fun getGroups(): List<SearchResult> {
+    fun getGroups(): List<Group> {
         var ctx = context!!
         val ctls = SearchControls()
         ctls.searchScope = SearchControls.SUBTREE_SCOPE
-        return Converter.toList(ctx.search("", "(objectClass=posixGroup)", ctls))
+        val res = ctx.search("", "(objectClass=posixGroup)", ctls)
+        val list: MutableList<Group> = mutableListOf()
+        while (res.hasMore()) {
+            list.add(Group(res.next()))
+        }
+        return list
     }
 
     fun getUsers(): List<SearchResult> {
