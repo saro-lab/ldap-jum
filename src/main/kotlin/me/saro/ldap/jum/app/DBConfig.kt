@@ -1,4 +1,4 @@
-package me.saro.ldap.jum.config
+package me.saro.ldap.jum.app
 
 import com.zaxxer.hikari.HikariDataSource
 import org.springframework.beans.factory.annotation.Value

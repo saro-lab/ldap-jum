@@ -1,7 +1,7 @@
 package me.saro.ldap.jum
 
 import lombok.extern.slf4j.Slf4j
-import me.saro.ldap.jum.props.PropsService
+import me.saro.ldap.jum.config.PropsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
