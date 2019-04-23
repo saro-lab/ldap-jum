@@ -1,4 +1,4 @@
-package me.saro.ldap.jum.props
+package me.saro.ldap.jum.config
 
 import org.springframework.data.repository.CrudRepository
 
