@@ -6,9 +6,15 @@
 <div id="app">
 
     <table>
-        <tr :key="node.key" v-for="node in props">
-            <td>{{node.key}}</td>
-            <td>{{node.value}}</td>
+        <tr>
+            <th>GID</th>
+            <th>이름</th>
+            <th>ㅁㄴㅇㄹ</th>
+        </tr>
+        <tr :key="node.gidNumber" v-for="node in groups">
+            <td>{{node.gidNumber}}</td>
+            <td>{{node.cn}}</td>
+            <td>111</td>
         </tr>
     </table>
 

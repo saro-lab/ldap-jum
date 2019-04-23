@@ -13,5 +13,7 @@ class PropsService {
 
     fun get(key: String) = repository.findById(key).map(Props::value).orElse(null)
 
+    fun getOptional(key: String) = repository.findById(key).map(Props::value)
+
     fun set(key: String, value: String) = repository.save(Props(key, value))
 }

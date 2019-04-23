@@ -6,9 +6,7 @@ import me.saro.ldap.jum.props.PropsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/group")
@@ -18,16 +16,27 @@ class GroupController {
 
     @GetMapping("/")
     fun root(model: Model): String {
-        model.addAttribute("groups", ldapService.getGroups())
+        model.addAttribute("groups", ldapService.getAllGroups())
         // aa
-        return "group/index"
+        return "group/group"
     }
 
     @GetMapping("/list")
     @ResponseBody
     fun list() : String {
-        println(ldapService.getGroups())
-        return Converter.toJson(ldapService.getGroups())
+        return Converter.toJson(ldapService.getAllGroups())
+    }
+
+    @PostMapping("/{name}")
+    @ResponseBody
+    fun create(@PathVariable("name") name: String) : String {
+        return Converter.toJson(ldapService.createGroup(name))
+    }
+
+    @DeleteMapping("/{name}/{gid}")
+    @ResponseBody
+    fun delete(@PathVariable("name") name: String, @PathVariable("gid") gid: String) : String {
+        return Converter.toJson(ldapService.deleteGroup(name, gid))
     }
 
 

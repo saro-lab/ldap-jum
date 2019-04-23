@@ -1,6 +1,7 @@
 package me.saro.ldap.jum.ldap
 
 import me.saro.commons.Converter
+import me.saro.commons.Maps
 import me.saro.commons.Valids
 import me.saro.ldap.jum.ldap.group.Group
 import me.saro.ldap.jum.props.PropsService
@@ -11,26 +12,32 @@ import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.naming.Context
 import javax.naming.NamingEnumeration
+import javax.naming.directory.BasicAttribute
+import javax.naming.directory.BasicAttributes
 import javax.naming.directory.SearchControls
 import javax.naming.directory.SearchResult
 import javax.naming.ldap.InitialLdapContext
-
 
 @Service
 class LdapService {
 
     @Autowired lateinit var propsService: PropsService
+
+    lateinit var context: InitialLdapContext
     lateinit var status: LdapStatus
-    var context: InitialLdapContext? = null
+    lateinit var baseDn: String
+    lateinit var bindDn: String
+    lateinit var scSubTree: SearchControls
+    lateinit var scOneLevel: SearchControls
 
     @PostConstruct
     fun load() {
 
         var host = propsService.get("LDAP_HOST")
         var port = propsService.get("LDAP_PORT")
-        var bindDn = propsService.get("LDAP_BIND_DN")
         var bindPassword = propsService.get("LDAP_BIND_PASSWORD")
-        var baseDn = propsService.get("LDAP_BASE_DN")
+        bindDn = propsService.get("LDAP_BIND_DN")
+        baseDn = propsService.get("LDAP_BASE_DN")
 
         if (!Valids.isNotNull(host, port, bindDn, bindPassword, baseDn)) {
             status = LdapStatus.NOT_INSTALLED
@@ -43,13 +50,13 @@ class LdapService {
         env.put(Context.SECURITY_PRINCIPAL, bindDn)
         env.put(Context.SECURITY_CREDENTIALS, bindPassword)
 
+        loadSearchControls()
+
         close()
         context = InitialLdapContext(env, null)
 
         try {
-            val ctls = SearchControls()
-            ctls.searchScope = SearchControls.ONELEVEL_SCOPE
-            context!!.search("", "($bindDn)", ctls)
+            context.search("", "($bindDn)", scOneLevel)
             status = LdapStatus.ACTIVE
         } catch (e: Exception) {
             status = LdapStatus.CONNECTION_FAILURE
@@ -61,11 +68,15 @@ class LdapService {
         }
     }
 
-    fun getGroups(): List<Group> {
-        var ctx = context!!
-        val ctls = SearchControls()
-        ctls.searchScope = SearchControls.SUBTREE_SCOPE
-        val res = ctx.search("", "(objectClass=posixGroup)", ctls)
+    private fun loadSearchControls() {
+        scSubTree = SearchControls()
+        scSubTree.searchScope = SearchControls.SUBTREE_SCOPE
+        scOneLevel = SearchControls()
+        scOneLevel.searchScope = SearchControls.ONELEVEL_SCOPE
+    }
+
+    fun getAllGroups(): List<Group> {
+        val res = context.search("", "(objectClass=posixGroup)", scSubTree)
         val list: MutableList<Group> = mutableListOf()
         while (res.hasMore()) {
             list.add(Group(res.next()))
@@ -73,23 +84,54 @@ class LdapService {
         return list
     }
 
+    fun getNextGid(): String {
+        var gid = propsService.getOptional("gidNumber").orElseGet {
+            getAllGroups().stream().mapToInt{ Integer.parseInt(it.gidNumber) }.max().orElse(499).toString()
+        }
+        gid = (Integer.parseInt(gid) + 1).toString()
+        propsService.set("gidNumber", gid)
+        return gid
+    }
+
+    fun createGroup(name: String): Map<String, String> {
+
+        val attrs = BasicAttributes(true)
+
+        attrs.put(BasicAttribute("cn", name))
+        attrs.put(BasicAttribute("objectclass", "posixGroup"))
+        attrs.put(BasicAttribute("gidNumber", getNextGid()))
+
+        try {
+            context.bind("cn=$name", context, attrs)
+        } catch (e: Exception) {
+            return Maps.toMap("res", "ERROR", "msg", e.message)
+        }
+
+        return Maps.toMap("res", "OK")
+    }
+
+    fun deleteGroup(name: String, gid: String): Map<String, String> {
+        try {
+            println("cn=$name")
+            context.destroySubcontext("cn=$name")
+        } catch (e: Exception) {
+            return Maps.toMap("res", "ERROR", "msg", e.message)
+        }
+        return Maps.toMap("res", "OK")
+    }
+
     fun getUsers(): List<SearchResult> {
-        var ctx = context!!
-        val ctls = SearchControls()
-        ctls.searchScope = SearchControls.ONELEVEL_SCOPE
-        return Converter.toList(ctx.search("", "(objectClass=posixAccount)", ctls))
+        return Converter.toList(context.search("", "(objectClass=posixAccount)", scOneLevel))
     }
 
     private fun <T> toList(e: NamingEnumeration<T>): List<T> = Converter.toList(e)
 
     @PreDestroy
     fun close() {
-        if (context != null) {
-            try {
-                context!!.close()
-            } catch (e: Exception) {
+        try {
+            context.close()
+        } catch (e: Exception) {
 
-            }
         }
     }
 }

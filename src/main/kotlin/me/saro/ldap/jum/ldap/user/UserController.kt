@@ -18,6 +18,6 @@ class UserController {
     fun root(model: Model): String {
         model.addAttribute("users", ldapService.getUsers())
         // aa
-        return "user/index"
+        return "user/user"
     }
 }
