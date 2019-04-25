@@ -36,13 +36,16 @@ class LdapService {
         var host = propsService.get("LDAP_HOST")
         var port = propsService.get("LDAP_PORT")
         var bindPassword = propsService.get("LDAP_BIND_PASSWORD")
-        bindDn = propsService.get("LDAP_BIND_DN")
-        baseDn = propsService.get("LDAP_BASE_DN")
+        var bindDn = propsService.get("LDAP_BIND_DN")
+        var baseDn = propsService.get("LDAP_BASE_DN")
 
         if (!Valids.isNotNull(host, port, bindDn, bindPassword, baseDn)) {
             status = LdapStatus.NOT_INSTALLED
             return
         }
+
+        this.bindDn = bindDn
+        this.baseDn = baseDn
 
         val env = Hashtable<String, String>()
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")

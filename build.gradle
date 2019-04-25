@@ -10,10 +10,6 @@ group = 'me.saro'
 version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 
-//bootRun {
-//	addResources = true
-//}
-
 repositories {
 	mavenCentral()
 	jcenter()
@@ -63,4 +59,8 @@ compileTestKotlin {
 		freeCompilerArgs = ['-Xjsr305=strict']
 		jvmTarget = '1.8'
 	}
+}
+
+bootRun {
+	sourceResources sourceSets.main
 }
