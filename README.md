@@ -1,5 +1,5 @@
-# ldap-jum
-LDAP JUM (Just User Management) WEB
+# ldap-sum
+LDAP SUM (Simple User Management) WEB
 
 
 
