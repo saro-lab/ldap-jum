@@ -1,63 +1,84 @@
 <th:block th:include="/part/html-head"/>
 
-    <div id="app" class="ui middle aligned center aligned grid">
-        <div class="column">
-            <h2 class="ui teal image header">
-            <img src="assets/images/logo.png" class="image">
+<div id="app" class="ui middle aligned center aligned grid">
+    <div class="column">
+        <h2 class="ui teal image header">
             <div class="content">
-                Log-in to your account
+                LDAP SUM
             </div>
-            </h2>
-            <form class="ui large form">
+        </h2>
+        <form class="ui large form">
             <div class="ui stacked segment">
                 <div class="field">
-                <div class="ui left icon input">
-                    <i class="user icon"></i>
-                    <input type="text" name="email" placeholder="E-mail address">
-                </div>
+                    <div class="ui labeled input">
+                        <label class="ui label fix">host</label>
+                        <input type="text" name="host" placeholder="ex) 192.168.0.1" v-model="conf.host">
+                    </div>
                 </div>
                 <div class="field">
-                <div class="ui left icon input">
-                    <i class="lock icon"></i>
-                    <input type="password" name="password" placeholder="Password">
+                    <div class="ui labeled input">
+                        <label class="ui label fix">port</label>
+                        <input type="text" name="port" placeholder="ex) 389" v-model="conf.port">
+                    </div>
                 </div>
+                <div class="field">
+                        <div class="ui labeled input">
+                            <label class="ui label fix">bind dn</label>
+                            <input type="text" name="admin-dn" placeholder="ex) cn=admin,dc=saro,dc=me" v-model="conf.admDn">
+                        </div>
+                    </div>
+                <div class="field">
+                    <div class="ui labeled input">
+                        <label class="ui label fix">password</label>
+                        <input type="password" name="admin-dn-pw" placeholder="bind dn password" v-model="conf.admDnPw">
+                    </div>
                 </div>
-                <div class="ui fluid large teal submit button">Login</div>
+                <div class="field">
+                    <div class="ui labeled input">
+                        <label class="ui label fix">base dn</label>
+                        <input type="text" name="base-dn" placeholder="ex)dc=saro,dc=me" v-model="conf.baseDn">
+                    </div>
+                </div>
+                <div class="ui fluid large teal submit button">Install</div>
             </div>
         
             <div class="ui error message"></div>
         
-            </form>
-        
-            <div class="ui message">
-            New to us? <a href="#">Sign Up</a>
-            </div>
-        </div>
-    </div>      
+        </form>
+    </div>
+</div>
+
 
 
 
 <style type="text/css">
 html { height: 100%; }
 body {
-      background-color: #DADADA;
-    }
-    body > .grid {
-      height: 100%;
-    }
-    .image {
-      margin-top: -100px;
-    }
-    .column {
-      max-width: 450px;
-    }
+    background-color: #DADADA;
+}
+body > .grid {
+    height: 100%;
+}
+.image {
+    margin-top: -100px;
+}
+.column {
+    max-width: 450px;
+}
+label.label.fix { width:88px; }
 </style>
 
 <script type="application/javascript" th:inline="javascript">
 var app = new Vue({
     el: '#app',
     data: {
-        
+        conf : {
+            host : '',
+            port : '389',
+            admDn : '',
+            admDnPw : '',
+            baseDn : ''
+        }
     }
 });
 </script>
