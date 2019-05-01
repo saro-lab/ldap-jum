@@ -37,7 +37,4 @@ class GroupController {
     fun delete(@PathVariable("name") name: String, @PathVariable("gid") gid: String) : String {
         return Converter.toJson(ldapService.deleteGroup(name, gid))
     }
-
-
-
 }
