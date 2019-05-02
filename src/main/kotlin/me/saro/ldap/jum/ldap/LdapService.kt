@@ -2,12 +2,12 @@ package me.saro.ldap.jum.ldap
 
 import me.saro.commons.Converter
 import me.saro.commons.Maps
-import me.saro.commons.Valids
 import me.saro.ldap.jum.config.PropsService
 import me.saro.ldap.jum.ldap.group.Group
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.stream.Stream
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.naming.Context
@@ -23,59 +23,64 @@ class LdapService {
 
     @Autowired lateinit var propsService: PropsService
 
-    lateinit var context: InitialLdapContext
-    lateinit var status: LdapStatus
-    lateinit var baseDn: String
-    lateinit var bindDn: String
+    var context = InitialLdapContext()
+    var status = LdapStatus.NOT_INSTALLED
+    var baseDn = ""
+    var bindDn = ""
     lateinit var scSubTree: SearchControls
     lateinit var scOneLevel: SearchControls
 
     @PostConstruct
     fun load() {
 
-        var host = propsService.get("LDAP_HOST")
-        var port = propsService.get("LDAP_PORT")
-        var bindPassword = propsService.get("LDAP_BIND_PASSWORD")
-        var bindDn = propsService.get("LDAP_BIND_DN")
-        var baseDn = propsService.get("LDAP_BASE_DN")
-
-        if (!Valids.isNotNull(host, port, bindDn, bindPassword, baseDn)) {
-            status = LdapStatus.NOT_INSTALLED
-            return
-        }
-
-        this.bindDn = bindDn
-        this.baseDn = baseDn
-
-        val env = Hashtable<String, String>()
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-        env.put(Context.PROVIDER_URL, "ldap://$host:$port/$baseDn")
-        env.put(Context.SECURITY_PRINCIPAL, bindDn)
-        env.put(Context.SECURITY_CREDENTIALS, bindPassword)
-
-        loadSearchControls()
-
-        close()
-        context = InitialLdapContext(env, null)
-
-        try {
-            context.search("", "($bindDn)", scOneLevel)
-            status = LdapStatus.ACTIVE
-        } catch (e: Exception) {
-            status = LdapStatus.CONNECTION_FAILURE
-        }
-
-
-        for (user in getUsers()) {
-            println(user)
-        }
-    }
-
-    private fun loadSearchControls() {
+        // step 1 : init Search Controls
         scSubTree = SearchControls()
         scSubTree.searchScope = SearchControls.SUBTREE_SCOPE
         scOneLevel = SearchControls()
         scOneLevel.searchScope = SearchControls.ONELEVEL_SCOPE
+
+        // step 2 : get connection info
+        val host = propsService.get("LDAP_HOST") ?: ""
+        val port = propsService.get("LDAP_PORT") ?: ""
+        val bindDn = propsService.get("LDAP_BIND_DN") ?: ""
+        val bindPassword = propsService.get("LDAP_BIND_PASSWORD") ?: ""
+        val baseDn = propsService.get("LDAP_BASE_DN") ?: ""
+
+        // step 3 : load
+        load(host, port, bindDn, bindPassword, baseDn)
+
+    }
+
+    fun load(host: String, port: String, bindDn: String, bindPassword: String, baseDn: String): Boolean {
+        if (Stream.of(host, port, bindDn, bindPassword, baseDn).filter(String::isNotBlank).count() != 5L) {
+            status = LdapStatus.NOT_INSTALLED
+            return false
+        }
+
+        try {
+            // close prev
+            close()
+
+            // set env / init / search
+            val env = Hashtable<String, String>()
+            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
+            env.put(Context.PROVIDER_URL, "ldap://$host:$port/$baseDn")
+            env.put(Context.SECURITY_PRINCIPAL, bindDn)
+            env.put(Context.SECURITY_CREDENTIALS, bindPassword)
+            context = InitialLdapContext(env, null)
+            context.search("", "($bindDn)", scOneLevel)
+
+            this.bindDn = bindDn
+            this.baseDn = baseDn
+
+            status = LdapStatus.ACTIVE
+
+            return true
+        } catch (e: Exception) {
+            status = LdapStatus.CONNECTION_FAILURE
+        }
+
+        return false
     }
 
     fun getAllGroups(): List<Group> {
