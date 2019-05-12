@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController
 @Controller
 class AppController {
 
+    @Autowired lateinit var ldapService: LdapService;
+
     @GetMapping("/install")
     fun install(model: Model): String {
+        model.addAttribute("status", ldapService.status)
         return "app/install"
     }
 
