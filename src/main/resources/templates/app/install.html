@@ -1,6 +1,25 @@
 <th:block th:include="/part/html-head"/>
 
-<div id="app" class="ui middle aligned center aligned grid">
+<style type="text/css">
+html { height: 100%; }
+body {
+    background-color: #DADADA;
+}
+body > .grid {
+    height: 100%;
+}
+.image {
+    margin-top: -100px;
+}
+.column {
+    max-width: 450px;
+}
+label.label.fix { width:88px; }
+.warning { position: fixed; top: 0; left: 0; right: 0; line-height: 2; padding:8px 0; font-size: 18px; font-weight: bold; background: #fffcd9; color: #6f363b }
+[v-cloak] { display: none !important; }
+</style>
+
+<div id="app" class="ui middle aligned center aligned grid" v-cloak>
     <div class="column">
         <h2 class="ui teal image header">
             <div class="content">
@@ -39,39 +58,26 @@
                         <input type="text" name="base-dn" placeholder="ex) dc=saro,dc=me" v-model="conf.baseDn">
                     </div>
                 </div>
-                <div class="ui fluid large teal submit button">Install</div>
+                <div class="ui fluid large teal submit button">
+                    {{ status == 'NOT_INSTALLED' ? 'install' : 'modify connection information' }}
+                </div>
             </div>
         
             <div class="ui error message"></div>
-        
+
+            <div class="warning" v-if="status == 'CONNECTION_FAILURE'">
+                ldap sum is installed!! but connection fail
+            </div>
         </form>
+
     </div>
 </div>
-
-
-
-
-<style type="text/css">
-html { height: 100%; }
-body {
-    background-color: #DADADA;
-}
-body > .grid {
-    height: 100%;
-}
-.image {
-    margin-top: -100px;
-}
-.column {
-    max-width: 450px;
-}
-label.label.fix { width:88px; }
-</style>
 
 <script type="application/javascript" th:inline="javascript">
 var app = new Vue({
     el: '#app',
     data: {
+        status : [[${status}]],
         conf : {
             host : '',
             port : '389',
