@@ -78,12 +78,16 @@ var app = new Vue({
     el: '#app',
     data: {
         status : [[${status}]],
-        conf : {
-            host : '',
-            port : '389',
-            admDn : '',
-            admDnPw : '',
-            baseDn : ''
+        conf: {
+            host: '',
+            port: '389',
+            admDn: '',
+            admDnPw: '',
+            baseDn: ''
+        }
+    },
+    methods: {
+        submit: function() {
         }
     }
 });
