@@ -58,7 +58,7 @@ label.label.fix { width:88px; }
                         <input type="text" name="base-dn" placeholder="ex) dc=saro,dc=me" v-model="conf.baseDn">
                     </div>
                 </div>
-                <div class="ui fluid large teal submit button">
+                <div class="ui fluid large teal submit button" @click="submit">
                     {{ status == 'NOT_INSTALLED' ? 'install' : 'modify connection information' }}
                 </div>
             </div>
@@ -88,6 +88,7 @@ var app = new Vue({
     },
     methods: {
         submit: function() {
+            fetch()
         }
     }
 });
