@@ -40,7 +40,6 @@ class WebConfig: WebMvcConfigurer {
         }
     }
 
-
     fun loginInterceptor(): HandlerInterceptor {
         return object : HandlerInterceptor {
             override fun postHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any, modelAndView: ModelAndView?) {
